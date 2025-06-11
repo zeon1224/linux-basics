@@ -1,0 +1,25 @@
+services:
+  nginx:
+    build:
+      context: .                     # 현재 디렉토리에서 Dockerfile을 빌드
+      dockerfile: Dockerfile        # 사용할 Dockerfile 명시
+    container_name: subway_nginx    # nginx 컨테이너 이름 지정
+    ports:
+      - "80:80"                     # 호스트의 80포트를 컨테이너의 80포트에 매핑 (웹 접근 가능)
+    volumes:
+      - ./html:/usr/src/app/html:rw           # 정적 HTML 파일 공유 (rw = 읽기/쓰기)
+      - ./cgi-bin:/usr/src/app/cgi-bin:rw     # CGI 스크립트 공유
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Nginx 설정파일을 읽기 전용으로 마운트
+      - ./start.sh:/start.sh                  # Nginx + fcgiwrap 시작 스크립트 공유
+      - ./data:/usr/src/app/data:rw           # 역 이름 저장용 데이터 공유
+    depends_on:
+      - cron                                  # cron 서비스가 먼저 실행되어야 함
+
+  cron:
+    build:
+      context: ./cron               # cron 컨테이너는 ./cron 디렉토리에서 Dockerfile을 빌드
+      dockerfile: Dockerfile
+    container_name: subway_cron     # cron 컨테이너 이름 지정
+    volumes:
+      - ./html:/usr/src/app/html:rw # HTML 결과물을 공유하여 nginx가 서빙할 수 있도록 함
+      - ./data:/usr/src/app/data:rw # 역 이름 데이터를 공유하여 업데이트 가능하게 함

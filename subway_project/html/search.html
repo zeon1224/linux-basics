@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>지하철 검색</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input[type="text"] {
+      width: 250px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      input[type="text"] {
+        width: 100%;
+      }
+
+      form {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>지하철 도착 정보 검색</h1>
+  <form action="/cgi-bin/Subway_search" method="GET">
+    <label for="station">지하철역명:</label>
+    <input type="text" id="station" name="station" placeholder="예: 서울역" required>
+    <button type="submit">검색</button>
+  </form>
+</body>
+</html>

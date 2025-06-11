@@ -1,0 +1,35 @@
+cgi-bin : 입력한 역의 이름을 station.txt(data폴더안에 있음) 에 저장
+
+cron : 1분마다 index.html을 새로 만들고 덮어씌어서 정보를 갱신하는 코드
+
+data :  입력한 역 저장, api로 불러온 xml파일을 txt형태로 백업(오류코드 발생시 확인가능)
+
+html : 디버그 로그와 xml을 저장, 검색폼과 최종생성된 index.html, history폴더(과거 index)를 저장하는곳
+
+기획 : 입력한 역의 실시간 도착정보와 내가 조회했던 기록보기
+
+구현 설명 :
+
+docker에서 nginx와 cron 컨테이너 생성
+nginx는 search.html을 서비스
+search.html에서 입력한 역을 Subway_search를 통해
+data폴더 내의 station.txt로 전달
+cron폴더 내의 update_subway.sh가 api키와 url을 받아와 xml파일을 파싱
+이때 파싱한 xml파일은 data폴더에 txt형태로 저장함
+파싱한 데이터를 기반으로 index.html을 생성
+해당역의 실시간 도착 정보와 내가 api를 요청한 시각을 표시
+index.html은 cron으로 1분마다 덮어 씌어지고
+전에 있던 index는 html폴더에 history로 저장됨
+index.html 하단에 있는 링크를 클릭하면 과거에 생성되었던 index를 열람 가능
+
+팀원들 마다의 참여 항목
+
+유상현 : docker-compose.yml, nginx용 Dockerfile, nginx.conf 제작
+(자동화 및 docker 연동 담당)
+
+이종우 : 각종 html 페이지 제작 및 검수
+(html 담당)
+
+정준영 : 기획 및 설계,
+Subway_search, cron용 Dockerfile, update_subway.sh, start.sh 제작
+(데이터 파싱 및 전체구조 담당)

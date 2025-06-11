@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# ------------------------------
+# CGI 환경에서 POST 요청도 처리할 수 있게 함
+# ------------------------------
+
+# POST 방식일 경우, 표준 입력에서 QUERY_STRING 값을 읽어옴
+if [ "$REQUEST_METHOD" = "POST" ]; then
+  read QUERY_STRING
+fi
+
+# ------------------------------
+# URL 디코딩 함수 정의 (예: %EC역명 → 한글 변환)
+# ------------------------------
+urldecode() {
+  echo -e "$(echo "$1" | sed 's/+/ /g;s/%/\\x/g')"
+}
+
+# ------------------------------
+# QUERY_STRING에서 'station' 파라미터 값만 추출 (URL 인코딩 상태)
+# ------------------------------
+STATION_ENC=$(echo "$QUERY_STRING" | sed -n 's/^station=\([^&]*\).*$/\1/p')
+
+# URL 디코딩하여 실제 한글 역 이름으로 변환
+STATION=$(urldecode "$STATION_ENC")
+
+# ------------------------------
+# 역 이름이 비어 있지 않으면 파일 저장 및 업데이트 스크립트 실행
+# ------------------------------
+if [ -n "$STATION" ]; then
+  # 전달된 역 이름을 파일에 저장
+  echo "$STATION" > /usr/src/app/data/station.txt
+  /usr/src/app/update_subway.sh &
+fi
+
+# ------------------------------
+# 클라이언트를 /index.html 로 리디렉션 (캐시 방지를 위한 랜덤 쿼리스트링 추가)
+# ------------------------------
+RANDOM_SUFFIX=$RANDOM
+echo "Status: 303 See Other"
+echo "Location: /index.html?dummy=$RANDOM_SUFFIX"
+echo ""
+
+# ------------------------------
+# 예외 상황 대응용 HTML 출력 (실제로는 redirect로 인해 사용자에게 안 보임)
+# ------------------------------
+echo "Content-type: text/html; charset=utf-8"
+echo ""
+echo "<html><body><h1>역 이름이 비어 있습니다.</h1></body></html>"
